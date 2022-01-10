@@ -32,8 +32,8 @@ All of these steps should be carried out on your Hadoop cluster.
 
 - Step 3: Compile and package the appropriate data generator.
 
-  For TPC-DS, ```./tpcds-build.sh``` downloads, compiles and packages the TPC-DS data generator.
-  For TPC-H, ```./tpch-build.sh``` downloads, compiles and packages the TPC-H data generator.
+  For TPC-DS, ```./tpcds-build.sh``` downloads, compiles and packages the TPC-DS data generator,maven version 3.0.5,jdk 1.7,add surefire plugin to pom.xml,also this version is not support Mac OS,you must choose a linux system.
+  For TPC-H, ```./tpch-build.sh``` downloads, compiles and packages the TPC-H data generator,modify the ${DATA_BASE} to your name.
 
 - Step 4: Decide how much data you want to generate.
 

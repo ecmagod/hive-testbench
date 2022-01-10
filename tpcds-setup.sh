@@ -92,6 +92,7 @@ echo -e "all: ${DIMS} ${FACTS}" > $LOAD_FILE
 i=1
 total=24
 DATABASE=tpcds_bin_partitioned_${FORMAT}_${SCALE}
+DATABASE=default
 MAX_REDUCERS=2500 # maximum number of useful reducers for any scale 
 REDUCERS=$((test ${SCALE} -gt ${MAX_REDUCERS} && echo ${MAX_REDUCERS}) || echo ${SCALE})
 
