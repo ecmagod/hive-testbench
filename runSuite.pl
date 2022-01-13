@@ -25,9 +25,14 @@ if( $suite eq 'tpcds' ) {
 } # end if
 my @queries = glob '*.sql';
 
-my $db = { 
-	'tpcds' => "tpcds_bin_partitioned_orc_$scale",
-	'tpch' => "tpch_flat_orc_$scale"
+#my $db = {
+#	'tpcds' => "tpcds_bin_partitioned_orc_$scale",
+#	'tpch' => "tpch_flat_orc_$scale"
+#};
+
+my $db = {
+	'tpcds' => "default",
+	'tpch' => "default"
 };
 
 print "filename,status,time,rows\n";

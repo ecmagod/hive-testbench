@@ -1,4 +1,4 @@
-create database if not exists ${DB};
+--create database if not exists ${DB};
 use ${DB};
 -- Table<store_sales (23 cols)  partition=ss_sold_date_sk>
 

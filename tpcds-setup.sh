@@ -70,12 +70,13 @@ hadoop fs -chmod -R 777  ${DIR}/${SCALE}
 
 echo "TPC-DS text data generation complete."
 
-HIVE="beeline -n hive -u 'jdbc:hive2://localhost:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2?tez.queue.name=default' "
-
+#HIVE="beeline -n hive -u 'jdbc:hive2://localhost:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2?tez.queue.name=default' "
+#参考华为云文档https://bbs.huaweicloud.com/blogs/260840
+HIVE="hive"
 # Create the text/flat tables as external tables. These will be later be converted to ORCFile.
 echo "Loading text data into external tables."
-runcommand "$HIVE  -i settings/load-flat.sql -f ddl-tpcds/text/alltables.sql --hivevar DB=tpcds_text_${SCALE} --hivevar LOCATION=${DIR}/${SCALE}"
-
+runcommand "$HIVE  -i settings/load-flat.sql -f ddl-tpcds/text/alltables.sql --hivevar DB=test --hivevar LOCATION=${DIR}/${SCALE}"
+#hive -i settings/load-flat.sql -f ddl-tpcds/text/alltables.sql --hivevar DB=test --hivevar LOCATION=/user/bizdevcd/tps-ds/2
 # Create the partitioned and bucketed tables.
 if [ "X$FORMAT" = "X" ]; then
 	FORMAT=orc
@@ -86,12 +87,13 @@ SILENCE="2> /dev/null 1> /dev/null"
 if [ "X$DEBUG_SCRIPT" != "X" ]; then
 	SILENCE=""
 fi
+SILENCE="> /data/hive-testbench-hdp3/logs/setup.log"
 
 echo -e "all: ${DIMS} ${FACTS}" > $LOAD_FILE
 
 i=1
 total=24
-DATABASE=tpcds_bin_partitioned_${FORMAT}_${SCALE}
+#DATABASE=tpcds_bin_partitioned_${FORMAT}_${SCALE}
 DATABASE=default
 MAX_REDUCERS=2500 # maximum number of useful reducers for any scale 
 REDUCERS=$((test ${SCALE} -gt ${MAX_REDUCERS} && echo ${MAX_REDUCERS}) || echo ${SCALE})
@@ -100,7 +102,7 @@ REDUCERS=$((test ${SCALE} -gt ${MAX_REDUCERS} && echo ${MAX_REDUCERS}) || echo $
 for t in ${DIMS}
 do
 	COMMAND="$HIVE  -i settings/load-partitioned.sql -f ddl-tpcds/bin_partitioned/${t}.sql \
-	    --hivevar DB=${DATABASE} --hivevar SOURCE=tpcds_text_${SCALE} \
+	    --hivevar DB=${DATABASE} --hivevar SOURCE=shulaibao \
             --hivevar SCALE=${SCALE} \
 	    --hivevar REDUCERS=${REDUCERS} \
 	    --hivevar FILE=${FORMAT}"
@@ -113,7 +115,7 @@ do
 	COMMAND="$HIVE  -i settings/load-partitioned.sql -f ddl-tpcds/bin_partitioned/${t}.sql \
 	    --hivevar DB=${DATABASE} \
             --hivevar SCALE=${SCALE} \
-	    --hivevar SOURCE=tpcds_text_${SCALE} --hivevar BUCKETS=${BUCKETS} \
+	    --hivevar SOURCE=shulaibao --hivevar BUCKETS=${BUCKETS} \
 	    --hivevar RETURN_BUCKETS=${RETURN_BUCKETS} --hivevar REDUCERS=${REDUCERS} --hivevar FILE=${FORMAT}"
 	echo -e "${t}:\n\t@$COMMAND $SILENCE && echo 'Optimizing table $t ($i/$total).'" >> $LOAD_FILE
 	i=`expr $i + 1`
